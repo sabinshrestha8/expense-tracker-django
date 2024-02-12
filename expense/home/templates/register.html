@@ -1,0 +1,11 @@
+{% extends "base.html" %} {% block start %}
+
+<div class="container">
+  <h3>Register Now!</h3>
+  <form id="form" method="POST" autocomplete="off">
+    {% csrf_token %} {{ registerform.as_p }}
+
+    <input type="submit" value="Register" />
+  </form>
+</div>
+{% endblock %}

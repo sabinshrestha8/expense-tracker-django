@@ -1,0 +1,82 @@
+{% extends "base.html" %} {% block start %}
+<h2>Expense Tracker</h2>
+
+<div class="container">
+  <h4>Your Balance</h4>
+  <h1 id="balance">${{ profile.balance }}</h1>
+
+  <div class="inc-exp-container">
+    <div>
+      <h4>Income</h4>
+      <p id="money-plus" class="money plus">+${{ profile.income }}</p>
+    </div>
+    <div>
+      <h4>Expense</h4>
+      <p id="money-minus" class="money minus">-${{ profile.expenses }}</p>
+    </div>
+  </div>
+
+  <h3>History</h3>
+  <ul id="list" class="list">
+    {% for expense in expenses %}
+    <li
+      class="{% if expense.expense_type == 'Positive' %}plus{% else %}minus{% endif %}"
+    >
+      {{ expense.name }}
+      <span
+        >{% if expense.expense_type == 'Positive' %}+{% else %}-{% endif %}
+        ${{expense.amount}}</span
+      >
+      <form method="POST" style="display: inline">
+        {% csrf_token %}
+        <input type="hidden" name="expense_id" value="{{ expense.id }}" />
+        <button type="submit" name="update" class="update-btn">Update</button>
+      </form>
+      <form method="POST" style="display: inline">
+        {% csrf_token %}
+        <input type="hidden" name="expense_id" value="{{ expense.id }}" />
+        <button type="submit" name="delete" class="delete-btn">X</button>
+      </form>
+    </li>
+    {% endfor %}
+  </ul>
+
+  <h3>Add new transaction</h3>
+  <form id="form" method="POST">
+    {% csrf_token %}
+    <div class="form-control">
+      <label for="text">Text</label>
+      <input
+        type="text"
+        required
+        name="text"
+        id="text"
+        placeholder="Enter text..."
+      />
+    </div>
+    <div class="form-control">
+      <label for="amount"
+        >Amount <br />
+        (negative - expense, positive - income)</label
+      >
+      <input
+        type="number"
+        required
+        name="amount"
+        id="amount"
+        placeholder="Enter amount..."
+      />
+    </div>
+    <div class="form-control">
+      <label for="text">Expense Type</label>
+      <select name="expense_type" required class="form-control">
+        <option value="Positive">Positive</option>
+        <option value="Negative">Negative</option>
+      </select>
+    </div>
+    <button class="btn" type="submit" name="add">Add transaction</button>
+  </form>
+
+  <a href="{% url 'logout' %}">Logout</a>
+</div>
+{% endblock %}
