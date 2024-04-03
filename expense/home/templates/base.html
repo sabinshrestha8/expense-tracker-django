@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -5,6 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Django Expense Tracker</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css"
+    />
+    <script
+      defer
+      src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"
+    ></script>
+    <script src="{% static 'js/jquery.js' %}"></script>
     <style>
       @import url("https://fonts.googleapis.com/css?family=Lato&display=swap");
 
@@ -31,7 +41,8 @@
 
       .container {
         margin: 30px auto;
-        width: 400px;
+        /* width: 400px; */
+        width: 420px;
       }
 
       h1 {
@@ -152,12 +163,53 @@
         top: 50%;
         left: 0;
         transform: translate(-100%, -50%);
-        opacity: 0;
-        transition: opacity 0.3s ease;
+        /* opacity: 0;
+        transition: opacity 0.3s ease; */
       }
 
       .list li:hover .delete-btn {
         opacity: 1;
+      }
+
+      .update-btn {
+        background-color: #3498db; /* Use a shade of blue for editing */
+        color: white; /* Set text color to white for better contrast */
+        font-weight: 600;
+        /* padding: 8px 16px; */
+        padding: 8px 12px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, box-shadow 0.3s; /* Add transition for smoother effect */
+      }
+
+      .update-btn:hover {
+        background-color: #2980b9; /* Darken the color on hover */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add subtle shadow on hover */
+      }
+
+      .update-btn:active {
+        background-color: #1f618d; /* Darken the color when clicked */
+        box-shadow: none; /* Remove shadow when clicked */
+      }
+
+      .list span.plus {
+        color: #2ecc71;
+      }
+
+      .list span.minus {
+        color: #c0392b;
+      }
+
+      /* Ensure li elements are flex containers */
+      .list li {
+        display: flex;
+        justify-content: space-between; /* Align items at flex container ends */
+      }
+
+      /* Additional styling for the expense info */
+      .expense-info {
+        flex: 1; /* Expand to take up remaining space */
       }
     </style>
   </head>

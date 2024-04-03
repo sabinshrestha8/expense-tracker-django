@@ -42,6 +42,8 @@ from django.contrib.auth import authenticate, login, logout
 def home(request):
     profile = Profile.objects.filter(user=request.user).first()
     expenses = Expense.objects.filter(user=request.user)
+    expense_id = None
+    expense = None
 
     if request.method == 'POST':
         if 'add' in request.POST:
@@ -59,7 +61,24 @@ def home(request):
                 profile.balance -= float(amount)
 
             profile.save()
+        elif 'edit' in request.POST:
+            expense_id = request.POST.get('expense_id')
+            expense = get_object_or_404(Expense, id=expense_id, user=request.user)
 
+            context = {'profile': profile, 'expenses': expenses, 'expense': expense}
+            return render(request, 'home.html', context)
+        elif 'delete' in request.POST:
+            expense_id = request.POST.get('expense_id')
+            expense = get_object_or_404(Expense, id=expense_id, user=request.user)
+
+            if expense.expense_type == 'Positive':
+                profile.balance -= expense.amount
+            else:
+                profile.expenses -= expense.amount
+                profile.balance += expense.amount
+
+            profile.save()
+            expense.delete()
         elif 'update' in request.POST:
             expense_id = request.POST.get('expense_id')
             text = request.POST.get('text')
@@ -89,22 +108,10 @@ def home(request):
             expense.save()
 
             profile.save()
-        elif 'delete' in request.POST:
-            expense_id = request.POST.get('expense_id')
-            expense = get_object_or_404(Expense, id=expense_id, user=request.user)
-
-            if expense.expense_type == 'Positive':
-                profile.balance -= expense.amount
-            else:
-                profile.expenses -= expense.amount
-                profile.balance += expense.amount
-
-            profile.save()
-            expense.delete()
 
         return redirect('/')
 
-    context = {'profile': profile, 'expenses': expenses}
+    context = {'profile': profile, 'expenses': expenses, 'expense': expense}
     return render(request, 'home.html', context)
 
 def user_register(request):
@@ -145,6 +152,7 @@ def user_login(request):
 
     return render(request, 'login.html', context=context)
 
+@login_required(login_url="login")
 def user_logout(request):
 
     auth.logout(request)
