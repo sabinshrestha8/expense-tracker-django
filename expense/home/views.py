@@ -1,36 +1,8 @@
-# from django.shortcuts import redirect, render
-# from .models import *
-
-# # Create your views here.
-# def home(request):
-#     profile = Profile.objects.filter(user = request.user).first()
-#     expenses = Expense.objects.filter(user = request.user)
-
-#     if request.method == 'POST':
-#         text = request.POST.get('text')
-#         amount = request.POST.get('amount')
-#         expense_type = request.POST.get('expense_type')
-
-#         expense = Expense(name=text, amount=amount, expense_type=expense_type, user=request.user)
-#         expense.save()
-
-#         if expense_type == 'Positive':
-#             profile.balance += float(amount)
-#         else:
-#             profile.expenses += float(amount)
-#             profile.balance -= float(amount)
-
-#         profile.save()
-#         return redirect('/')
-
-#     context = {'profile': profile, 'expenses': expenses}
-
-#     return render(request, 'home.html', context)
-
-
+from pyexpat.errors import messages
 from django.shortcuts import redirect, render, get_object_or_404
 from .models import *
 from .forms import CreateUserForm, CustomUserChangeForm, LoginForm
+from django.contrib import messages
 
 from django.contrib.auth.decorators import login_required
 
@@ -47,20 +19,41 @@ def home(request):
 
     if request.method == 'POST':
         if 'add' in request.POST:
+            # text = request.POST.get('text')
+            # amount = request.POST.get('amount')
+            # expense_type = request.POST.get('expense_type')
+
+            # expense = Expense(name=text, amount=amount, expense_type=expense_type, user=request.user)
+            # expense.save()
+
+            # if expense_type == 'Positive':
+            #     profile.balance += float(amount)
+            # else:
+            #     profile.expenses += float(amount)
+            #     profile.balance -= float(amount)
+
+            # profile.save()
+
             text = request.POST.get('text')
-            amount = request.POST.get('amount')
+            amount_str = request.POST.get('amount')  # Get the amount as string
+            amount = float(amount_str)  # Convert the string to float
             expense_type = request.POST.get('expense_type')
 
-            expense = Expense(name=text, amount=amount, expense_type=expense_type, user=request.user)
-            expense.save()
+            # Check if balance is greater than or equal to the amount
+            if profile.balance >= amount:
+                expense = Expense(name=text, amount=amount, expense_type=expense_type, user=request.user)
+                expense.save()
 
-            if expense_type == 'Positive':
-                profile.balance += float(amount)
+                if expense_type == 'Positive':
+                    profile.balance += float(amount)
+                else:
+                    profile.expenses += float(amount)
+                    profile.balance -= float(amount)
+
+                profile.save()
             else:
-                profile.expenses += float(amount)
-                profile.balance -= float(amount)
-
-            profile.save()
+                # Handle case where balance is insufficient
+                messages.error(request, "Insufficient balance to make this expense.")
         elif 'edit' in request.POST:
             expense_id = request.POST.get('expense_id')
             expense = get_object_or_404(Expense, id=expense_id, user=request.user)
@@ -124,8 +117,10 @@ def user_register(request):
         if form.is_valid():
             form.save()
 
+            messages.success(request, "User registered successfully.")
+
             return redirect("login")
-        
+                
     context = {'registerform': form}
 
     return render(request, 'register.html', context=context)
@@ -192,37 +187,3 @@ def update_budget_profile(request):
         profile.save()
 
         return redirect('/')
-
-# @login_required(login_url="login")
-# def update_budget_profile(request):
-#     if request.method == 'POST':
-#         profile, created = Profile.objects.get_or_create(user=request.user)
-
-#         profile.income = request.POST.get('income')
-#         profile.expenses = request.POST.get('expenses')
-#         profile.balance = request.POST.get('balance')
-#         profile.save()
-
-#         return redirect('/')
-#     else:
-#         return render(request, 'budget.html')
-
-# @login_required(login_url="login")
-# def update_budget_profile(request):
-#     if request.method == 'POST':
-#         profile, created = Profile.objects.get_or_create(user=request.user, income=0, expenses=0, balance=0)
-
-#         # Ensure income, expenses, and balance are provided before saving
-#         income = request.POST.get('income')
-#         expenses = request.POST.get('expenses')
-#         balance = request.POST.get('balance')
-
-#         if income is not None and expenses is not None and balance is not None:
-#             profile.income = income
-#             profile.expenses = expenses
-#             profile.balance = balance
-#             profile.save()
-
-#         return redirect('/')
-#     else:
-#         return render(request, 'budget.html')
