@@ -1,0 +1,109 @@
+{% extends "base.html" %} {% load static %} {% block start %}
+
+<nav
+  class="navbar is-black"
+  role="navigation"
+  aria-label="main navigation"
+  style="width: 100%; background-color: #4f517d"
+>
+  <div class="navbar-brand">
+    <a class="navbar-item" href="{% url 'home' %}">
+      <img src="{% static 'img/sawbeen.jpg' %}" width="30px" height="30px" />
+    </a>
+
+    <a
+      role="button"
+      class="navbar-burger burger"
+      aria-label="menu"
+      aria-expanded="false"
+      data-target="navbarBasicExample"
+    >
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+
+  <div id="navbarBasicExample" class="navbar-menu">
+    <div class="navbar-start">
+      <a class="navbar-item" href="{% url 'home' %}">Home </a>
+      <a class="navbar-item" href="{% url 'update_profile' %}">Profile</a>
+      <a class="navbar-item" href="{% url 'budget_profile' %}"
+        >Budget Profile</a
+      >
+    </div>
+
+    <div class="navbar-end">
+      <div class="navbar-item">
+        {% if request.user.is_authenticated %}
+        <a class="has-text-light mr-2"> Welcome, {{ user.username|title }} </a>
+        <div class="buttons">
+          <a href="{% url 'logout' %}" class="button is-danger">
+            <strong>Logout</strong>
+          </a>
+          {% else %}
+          <a href="{% url 'register' %}" class="button is-success mr-2">
+            <strong>Sign up</strong>
+          </a>
+          <a href="{% url 'login' %}" class="button is-light"> Log in </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <h1 class="title">Budget Profile</h1>
+  <form method="post" action="{% url 'update_budget_profile' %}">
+    {% csrf_token %}
+    <div class="field">
+      <label class="label">Income</label>
+      <div class="control">
+        <input
+          type="number"
+          class="input"
+          name="income"
+          placeholder="Enter Income..."
+          value="{% if profile %}{{ profile.income }}{% endif %}"
+          required
+        />
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Expenses</label>
+      <div class="control">
+        <input
+          type="number"
+          class="input"
+          name="expenses"
+          placeholder="Enter Expenses"
+          value="{% if profile %}{{ profile.expenses }}{% endif %}"
+          required
+        />
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Balance</label>
+      <div class="control">
+        <input
+          type="number"
+          class="input"
+          name="balance"
+          placeholder="Enter Balance"
+          value="{% if profile %}{{ profile.balance }}{% endif %}"
+          required
+        />
+      </div>
+    </div>
+
+    <div class="field is-grouped">
+      <div class="control">
+        <button class="button is-primary" type="submit">Update</button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

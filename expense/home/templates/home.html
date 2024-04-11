@@ -26,7 +26,9 @@
 
   <div id="navbarBasicExample" class="navbar-menu">
     <div class="navbar-start">
-      <a class="navbar-item">Home</a>
+      <a class="navbar-item" href="{% url 'home' %}">Home </a>
+      <a class="navbar-item" href="{% url 'update_profile' %}">Profile</a>
+      <a class="navbar-item" href="{% url 'budget_profile' %}">Budget Profile</a>
     </div>
 
     <div class="navbar-end">

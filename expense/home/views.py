@@ -30,7 +30,7 @@
 
 from django.shortcuts import redirect, render, get_object_or_404
 from .models import *
-from .forms import CreateUserForm, LoginForm
+from .forms import CreateUserForm, CustomUserChangeForm, LoginForm
 
 from django.contrib.auth.decorators import login_required
 
@@ -158,3 +158,71 @@ def user_logout(request):
     auth.logout(request)
 
     return redirect("login")
+
+@login_required(login_url="login")
+def update_profile(request):
+    user = request.user
+    form = CustomUserChangeForm(instance=user)
+
+    if request.method == 'POST':
+        form = CustomUserChangeForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('/')  # Redirect to the profile page after successful update
+
+    context = {'form': form}
+    return render(request, 'profile.html', context)
+
+@login_required(login_url="login")
+def budget_profile(request):
+    profile = Profile.objects.filter(user=request.user).first()
+
+    context = {'profile': profile}
+
+    return render(request, 'budget.html', context)
+
+@login_required(login_url="login")
+def update_budget_profile(request):
+    if request.method == 'POST':
+        profile = Profile.objects.filter(user=request.user).first()
+
+        profile.income = request.POST.get('income')
+        profile.expenses = request.POST.get('expenses')
+        profile.balance = request.POST.get('balance')
+        profile.save()
+
+        return redirect('/')
+
+# @login_required(login_url="login")
+# def update_budget_profile(request):
+#     if request.method == 'POST':
+#         profile, created = Profile.objects.get_or_create(user=request.user)
+
+#         profile.income = request.POST.get('income')
+#         profile.expenses = request.POST.get('expenses')
+#         profile.balance = request.POST.get('balance')
+#         profile.save()
+
+#         return redirect('/')
+#     else:
+#         return render(request, 'budget.html')
+
+# @login_required(login_url="login")
+# def update_budget_profile(request):
+#     if request.method == 'POST':
+#         profile, created = Profile.objects.get_or_create(user=request.user, income=0, expenses=0, balance=0)
+
+#         # Ensure income, expenses, and balance are provided before saving
+#         income = request.POST.get('income')
+#         expenses = request.POST.get('expenses')
+#         balance = request.POST.get('balance')
+
+#         if income is not None and expenses is not None and balance is not None:
+#             profile.income = income
+#             profile.expenses = expenses
+#             profile.balance = balance
+#             profile.save()
+
+#         return redirect('/')
+#     else:
+#         return render(request, 'budget.html')
