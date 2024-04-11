@@ -40,7 +40,7 @@ def home(request):
             expense_type = request.POST.get('expense_type')
 
             # Check if balance is greater than or equal to the amount
-            if profile.balance >= amount:
+            if expense_type == 'Positive' or profile.balance >= amount:
                 expense = Expense(name=text, amount=amount, expense_type=expense_type, user=request.user)
                 expense.save()
 
