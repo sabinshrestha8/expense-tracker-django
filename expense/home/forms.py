@@ -4,6 +4,8 @@ from django.core.validators import RegexValidator
 
 from django import forms
 
+from home.models import CustomUser
+
 # from django.forms.widgets import PasswordInput, TextInput
 
 # - Create/Register a user (Model Form)
@@ -32,14 +34,20 @@ class CreateUserForm(UserCreationForm):
         "placeholder": "re-enter password"
     }))
 
+    phone_number = forms.CharField(required=False, widget=forms.TextInput(attrs={
+        "class": "input",
+        "type": "tel",
+        "placeholder": "Enter phone number"
+    }))
+
     # email_validator = RegexValidator(
     #     regex=r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
     #     message='Please enter a valid email address.'
     # )
 
     class Meta:
-        model = User
-        fields = ['username', 'email', 'password1', 'password2']
+        model = CustomUser
+        fields = ['username', 'email', 'password1', 'password2', 'phone_number']
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
@@ -71,6 +79,12 @@ class CreateUserForm(UserCreationForm):
         if not password2:
             raise forms.ValidationError("Confirm password cannot be empty.")
         return password2
+    
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data.get('phone_number')
+        if not phone_number:
+            raise forms.ValidationError("Phone number cannot be empty.")
+        return phone_number
 
 # - Authenticate a user (Model Form)
 class LoginForm(AuthenticationForm):
@@ -91,5 +105,12 @@ class LoginForm(AuthenticationForm):
 
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
-        model = User
-        fields = ('username', 'email', 'first_name', 'last_name')
+        model = CustomUser
+        fields = ('username', 'email', 'first_name', 'last_name', 'phone_number')
+
+class CodeForm(forms.ModelForm):
+    number = forms.CharField(required=False, label='Code', help_text='Enter SMS verification code')
+
+    class Meta:
+        model = CustomUser
+        fields = ('number',)

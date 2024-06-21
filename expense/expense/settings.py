@@ -25,6 +25,14 @@ SECRET_KEY = 'django-insecure-!cjdz(%hg2bxw9u0l&c06e4yd_25g1g065*lxn7x73cid5*8%h
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'sabinshrestha8888@gmail.com'
+EMAIL_HOST_PASSWORD = 'oosmwaxwutjyxxtz'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False  
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
 ALLOWED_HOSTS = []
 
 
@@ -37,8 +45,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'home'
+    'home',
 ]
+
+AUTH_USER_MODEL = 'home.CustomUser'
+LOGIN_URL = '/login/'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

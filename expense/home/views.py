@@ -1,8 +1,9 @@
 from pyexpat.errors import messages
 from django.shortcuts import redirect, render, get_object_or_404
 from .models import *
-from .forms import CreateUserForm, CustomUserChangeForm, LoginForm
+from .forms import CodeForm, CreateUserForm, CustomUserChangeForm, LoginForm
 from django.contrib import messages
+from .utils import send_email
 
 from django.contrib.auth.decorators import login_required
 
@@ -139,9 +140,12 @@ def user_login(request):
             user = authenticate(request, username=username, password=password)
 
             if user is not None:
-                auth.login(request, user)
-                
-                return redirect("/")
+                # auth.login(request, user)
+  
+                # return redirect("/")
+
+                request.session['pk'] = user.pk
+                return redirect('verify_otp');
     
     context = {'loginform':form}
 
@@ -187,3 +191,30 @@ def update_budget_profile(request):
         profile.save()
 
         return redirect('/')
+
+def verify_otp(request):
+    form = CodeForm(request.POST or None)
+    pk = request.session.get('pk')
+
+    if pk:
+        user = CustomUser.objects.get(pk=pk)
+        code = user.code
+        # code_user = f"{user.username}: {code}"
+
+        if not request.POST :
+            # print(code_user)
+            #send sms
+            # send_sms(code_user, user.phone_number)
+
+            #send email
+            send_email(code, 'bodemagazine@gmail.com')
+        if form.is_valid():
+            num = form.cleaned_data.get('number')
+
+            if str(code) == num:
+                code.save()
+                auth.login(request, user)
+                return redirect("/")
+            else:
+                return redirect('login')
+    return render(request, 'two_factor_auth.html', {'form': form})

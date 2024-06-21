@@ -129,6 +129,17 @@
                 </div>
 
                 <div class="field">
+                  <label for="" class="label">Phone Number</label>
+                  <div class="control has-icons-left">
+                    {{ registerform.phone_number }}
+                    <span class="icon is-small is-left">
+                      <i class="fa fa-phone"></i>
+                    </span>
+                  </div>
+                  {{registerform.phone_number.errors}}
+                </div>
+
+                <div class="field">
                   <button class="button is-success" type="submit">
                     Signup
                   </button>
